@@ -19,27 +19,22 @@ const rejectedFilterBtn = document.getElementById('rejected-filter-btn');
 function checkEmpty() {
     let isEmpty = false;
     let message = '';
-    let subMessage = '';
 
     if (currentFilter === 'all-filter-btn') {
         isEmpty = allCardSection.children.length === 0;
         message = 'No Jobs Found';
-        subMessage = 'There are no job applications yet. Start tracking your applications!';
     } else if (currentFilter === 'interview-filter-btn') {
         isEmpty = interviewList.length === 0;
         message = 'No Interviews Yet';
-        subMessage = "You haven't marked any applications for interview yet. Keep applying!";
     } else if (currentFilter === 'rejected-filter-btn') {
         isEmpty = rejectedList.length === 0;
         message = 'No Rejections Yet';
-        subMessage = "No applications have been rejected. That's great news!";
     }
 
     if (isEmpty) {
         emptyState.classList.remove('hidden');
         emptyState.classList.add('flex');
         emptyState.querySelector('#empty-title').innerText = message;
-        emptyState.querySelector('#empty-subtitle').innerText = subMessage;
     } else {
         emptyState.classList.remove('flex');
         emptyState.classList.add('hidden');
@@ -179,26 +174,32 @@ mainContainer.addEventListener('click', function (e) {
 
 function createCardHTML(item) {
     return `
-        <div class="space-y-6">
+        <div class="space-y-4 sm:space-y-6 flex-1">
             <div>
-                <p class="job-name font-semibold text-[22px]">${item.jobName}</p>
-                <p class="job-post-name text-[#64748B]">${item.jobPostName}</p>
+                <p class="job-name font-semibold text-lg sm:text-[22px]">${item.jobName}</p>
+                <p class="job-post-name text-[#64748B] text-sm sm:text-base">${item.jobPostName}</p>
             </div>
             <div>
-                <p class="job-requirements text-[#64748B]">${item.jobRequirements}</p>
+                <p class="job-requirements text-[#64748B] text-xs sm:text-base">${item.jobRequirements}</p>
             </div>
             <div>
-                <p class="status bg-[#EEF4FF] inline px-3 py-2 font-medium">${item.status}</p>
+                <p class="status bg-[#EEF4FF] inline px-2 sm:px-3 py-1 sm:py-2 font-medium text-xs sm:text-base">
+                    ${item.status}
+                </p>
             </div>
             <div>
-                <p class="notes">${item.notes}</p>
+                <p class="notes text-sm sm:text-base">${item.notes}</p>
             </div>
             <div class="flex gap-2">
-                <button class="interview-btn font-semibold border-2 px-3 py-2 text-[#10B981] rounded-sm">INTERVIEW</button>
-                <button class="rejected-btn font-semibold border-2 px-3 py-2 text-[#EF4444] rounded-sm">REJECTED</button>
+                <button class="interview-btn font-semibold border-2 px-2 sm:px-3 py-1 sm:py-2 text-[#10B981] rounded-sm text-xs sm:text-base">
+                    INTERVIEW
+                </button>
+                <button class="rejected-btn font-semibold border-2 px-2 sm:px-3 py-1 sm:py-2 text-[#EF4444] rounded-sm text-xs sm:text-base">
+                    REJECTED
+                </button>
             </div>
         </div>
-        <div>
+        <div class="mt-3 sm:mt-0 sm:ml-4 self-start">
             <button class="delete-btn text-[#64748B] p-2 border border-[#F1F2F4] rounded-full">
                 <i class="fa-regular fa-trash-can"></i>
             </button>
@@ -209,7 +210,7 @@ function renderInterview() {
     interviewSection.innerHTML = '';
     for (let item of interviewList) {
         let div = document.createElement('div');
-        div.className = 'card flex justify-between p-6 shadow mb-4';
+        div.className = 'card flex flex-col sm:flex-row justify-between p-4 sm:p-6 shadow mb-4 rounded-lg';
         div.innerHTML = createCardHTML(item);
         interviewSection.appendChild(div);
     }
@@ -220,7 +221,7 @@ function renderRejected() {
     interviewSection.innerHTML = '';
     for (let item of rejectedList) {
         let div = document.createElement('div');
-        div.className = 'card flex justify-between p-6 shadow mb-4';
+        div.className = 'card flex flex-col sm:flex-row justify-between p-4 sm:p-6 shadow mb-4 rounded-lg';
         div.innerHTML = createCardHTML(item);
         interviewSection.appendChild(div);
     }
