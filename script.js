@@ -10,10 +10,41 @@ let currentFilter = 'all-filter-btn';
 let allCardSection = document.getElementById('allCards');
 let mainContainer = document.querySelector('main');
 const interviewSection = document.getElementById('interview-section');
+const emptyState = document.getElementById('empty-state');
 
 const allFilterBtn = document.getElementById('all-filter-btn');
 const interviewFilterBtn = document.getElementById('interview-filter-btn');
 const rejectedFilterBtn = document.getElementById('rejected-filter-btn');
+
+function checkEmpty() {
+    let isEmpty = false;
+    let message = '';
+    let subMessage = '';
+
+    if (currentFilter === 'all-filter-btn') {
+        isEmpty = allCardSection.children.length === 0;
+        message = 'No Jobs Found';
+        subMessage = 'There are no job applications yet. Start tracking your applications!';
+    } else if (currentFilter === 'interview-filter-btn') {
+        isEmpty = interviewList.length === 0;
+        message = 'No Interviews Yet';
+        subMessage = "You haven't marked any applications for interview yet. Keep applying!";
+    } else if (currentFilter === 'rejected-filter-btn') {
+        isEmpty = rejectedList.length === 0;
+        message = 'No Rejections Yet';
+        subMessage = "No applications have been rejected. That's great news!";
+    }
+
+    if (isEmpty) {
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+        emptyState.querySelector('#empty-title').innerText = message;
+        emptyState.querySelector('#empty-subtitle').innerText = subMessage;
+    } else {
+        emptyState.classList.remove('flex');
+        emptyState.classList.add('hidden');
+    }
+}
 
 function updateJobCount() {
     if (currentFilter === 'all-filter-btn') {
@@ -30,11 +61,11 @@ function calculateCount() {
     interviewCount.innerText = interviewList.length;
     rejectedCount.innerText = rejectedList.length;
     updateJobCount();
+    checkEmpty();
 }
 
 calculateCount();
 
-// ─── Filter‑tab toggling ────────────────────────────────────
 function toogleStyle(id) {
     [allFilterBtn, interviewFilterBtn, rejectedFilterBtn].forEach(btn => {
         btn.classList.remove('bg-[#3B82F6]', 'text-white');
@@ -61,6 +92,7 @@ function toogleStyle(id) {
     }
 
     updateJobCount();
+    checkEmpty();
 }
 
 function findOriginalCard(jobName) {
@@ -93,18 +125,15 @@ function handleInterview(card) {
     const original = findOriginalCard(data.jobName);
     if (original) original.querySelector('.status').innerText = 'Interview';
 
-    
     if (!interviewList.find(i => i.jobName === data.jobName)) {
         interviewList.push({ ...data, status: 'Interview' });
     }
 
-   
     rejectedList = rejectedList.filter(i => i.jobName !== data.jobName);
 
     calculateCount();
     refreshFilteredView();
 }
-
 
 function handleRejected(card) {
     const data = getCardData(card);
@@ -122,12 +151,11 @@ function handleRejected(card) {
     refreshFilteredView();
 }
 
-
 function handleDelete(card) {
     const jobName = card.querySelector('.job-name').innerText;
 
     interviewList = interviewList.filter(i => i.jobName !== jobName);
-    rejectedList  = rejectedList.filter(i => i.jobName !== jobName);
+    rejectedList = rejectedList.filter(i => i.jobName !== jobName);
 
     const original = findOriginalCard(jobName);
     if (original) original.remove();
@@ -136,10 +164,9 @@ function handleDelete(card) {
     refreshFilteredView();
 }
 
-
 mainContainer.addEventListener('click', function (e) {
     const card = e.target.closest('.card');
-    if (!card) return;                        // ignore clicks outside cards
+    if (!card) return;
 
     if (e.target.classList.contains('interview-btn')) {
         handleInterview(card);
@@ -150,7 +177,6 @@ mainContainer.addEventListener('click', function (e) {
     }
 });
 
-// ─── Render helpers ──────────────────────────────────────────
 function createCardHTML(item) {
     return `
         <div class="space-y-6">
@@ -187,6 +213,7 @@ function renderInterview() {
         div.innerHTML = createCardHTML(item);
         interviewSection.appendChild(div);
     }
+    checkEmpty();
 }
 
 function renderRejected() {
@@ -197,4 +224,5 @@ function renderRejected() {
         div.innerHTML = createCardHTML(item);
         interviewSection.appendChild(div);
     }
+    checkEmpty();
 }
